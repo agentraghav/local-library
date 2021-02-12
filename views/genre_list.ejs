@@ -1,0 +1,9 @@
+<%- include('header') %>
+<h1><%= title %></h1>
+<ul>
+  <% genre_list.map(genre => { %>
+  <li>
+    <a href="<%= genre.url %>"><%= genre.name %></a>
+  </li>
+  <% }) %>
+</ul>
