@@ -55,16 +55,15 @@ exports.book_list = function (req, res) {
 // Display Book Details
 
 exports.book_detail = function (req, res, next) {
+  const { id } = req.params.id;
+
   async.parallel(
     {
       book: function (callback) {
-        Book.findById(req.params.id)
-          .populate('author')
-          .populate('genre')
-          .exec(callback);
+        Book.findById(id).populate('author').populate('genre').exec(callback);
       },
       book_instance: function (callback) {
-        BookInstance.find({ book: req.params.id }).exec(callback);
+        BookInstance.find({ book: id }).exec(callback);
       },
     },
     function (err, result) {
@@ -138,13 +137,14 @@ exports.book_create_post = [
   body('genre.*').escape(),
 
   (req, res, next) => {
+    const { title, author, summary, isbn, genre } = req.body;
     const errors = validationResult(req);
     var book = new Book({
-      title: req.body.title,
-      author: req.body.author,
-      summary: req.body.summary,
-      isbn: req.body.isbn,
-      genre: req.body.genre,
+      title: title,
+      author: author,
+      summary: summary,
+      isbn: isbn,
+      genre: genre,
     });
 
     if (!errors.isEmpty()) {
@@ -191,13 +191,15 @@ exports.book_create_post = [
 // book delete form on GET
 
 exports.book_delete_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       book: function (callback) {
-        Book.findById(req.params.id).exec(callback);
+        Book.findById(id).exec(callback);
       },
       books_bookinstances: function (callback) {
-        BookInstance.find({ book: req.params.id }).exec(callback);
+        BookInstance.find({ book: id }).exec(callback);
       },
     },
     function (err, result) {
@@ -220,13 +222,15 @@ exports.book_delete_get = function (req, res, next) {
 // Handle book delete on POST
 
 exports.book_delete_post = function (req, res, next) {
+  const { bookid } = req.params;
+
   async.parallel(
     {
       book: function (callback) {
-        Book.findById(req.params.bookid).exec(callback);
+        Book.findById(bookid).exec(callback);
       },
       books_bookinstances: function (callback) {
-        BookInstance.find({ book: req.params.bookid }).exec(callback);
+        BookInstance.find({ book: bookid }).exec(callback);
       },
     },
     function (err, result) {
@@ -254,13 +258,12 @@ exports.book_delete_post = function (req, res, next) {
 // Display book update form on GET
 
 exports.book_update_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       book: function (callback) {
-        Book.findById(req.params.id)
-          .populate('author')
-          .populate('genre')
-          .exec(callback);
+        Book.findById(id).populate('author').populate('genre').exec(callback);
       },
       authors: function (callback) {
         Author.find(callback);
@@ -335,14 +338,15 @@ exports.book_update_post = [
 
   (req, res, next) => {
     const errors = validationResult(req);
-
+    const { id } = req.params;
+    const { title, author, summary, isbn, genre } = req.body;
     var book = new Book({
-      title: req.body.title,
-      author: req.body.author,
-      summary: req.body.summary,
-      isbn: req.body.isbn,
-      genre: typeof req.body.genre === 'undefined' ? [] : req.body.genre,
-      _id: req.params.id,
+      title: title,
+      author: author,
+      summary: summary,
+      isbn: isbn,
+      genre: typeof genre === 'undefined' ? [] : genre,
+      _id: id,
     });
     if (!errors.isEmpty()) {
       async.parallel(

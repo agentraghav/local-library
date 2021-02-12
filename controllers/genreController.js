@@ -27,13 +27,15 @@ exports.genre_list = function (req, res, next) {
 // Display genre details
 
 exports.genre_detail = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       genre: function (callback) {
-        Genre.findById(req.params.id).exec(callback);
+        Genre.findById(id).exec(callback);
       },
       genre_books: function (callback) {
-        Book.findById({ genre: req.params.id }).exec(callback);
+        Book.findById({ genre: id }).exec(callback);
       },
     },
     function (err, results) {
@@ -67,7 +69,7 @@ exports.genre_create_post = [
   (req, res, next) => {
     const errors = validationResult(req);
 
-    var genre = new Genre({ name: req.body.name });
+    const genre = new Genre({ name: req.body.name });
 
     if (!errors.isEmpty()) {
       res.render('genre_form', {
@@ -99,13 +101,15 @@ exports.genre_create_post = [
 // Genre delete on get
 
 exports.genre_delete_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       genre: function (callback) {
-        Genre.findById(req.params.id).exec(callback);
+        Genre.findById(id).exec(callback);
       },
       genres_books: function (callback) {
-        Book.find({ genre: req.params.id }).exec(callback);
+        Book.find({ genre: id }).exec(callback);
       },
     },
     function (err, results) {
@@ -127,13 +131,15 @@ exports.genre_delete_get = function (req, res, next) {
 // genre delete on post
 
 exports.genre_delete_post = function (req, res, next) {
+  const { genreid } = req.body;
+
   async.parallel(
     {
       genre: function (callback) {
-        Genre.findById(req.body.genreid).exec(callback);
+        Genre.findById(genreid).exec(callback);
       },
       genres_books: function (callback) {
-        Book.find({ genre: req.body.genreid }).exec(callback);
+        Book.find({ genre: genreid }).exec(callback);
       },
     },
     function (err, results) {
@@ -163,10 +169,12 @@ exports.genre_delete_post = function (req, res, next) {
 // update genre on get
 
 exports.genre_update_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       genre: function (callback) {
-        Genre.findById(req.params.id).exec(callback);
+        Genre.findById(id).exec(callback);
       },
     },
     function (err, results) {
@@ -186,18 +194,19 @@ exports.genre_update_post = [
 
   (req, res, next) => {
     const errors = validationResult(req);
-
+    const { title, name } = req.body;
+    const { id } = req.params;
     var genre = new Genre({
-      title: req.body.title,
-      name: req.body.name,
-      _id: req.params.id,
+      title: title,
+      name: name,
+      _id: id,
     });
 
     if (!errors.isEmpty()) {
       async.parallel(
         {
           genre: function (callback) {
-            Genre.findById(req.params.id).exec(callback);
+            Genre.findById(id).exec(callback);
           },
         },
         function (err, results) {
@@ -211,17 +220,14 @@ exports.genre_update_post = [
       );
       return;
     } else {
-      Genre.findOne({ name: req.body.name }).exec(function (err, found_genre) {
+      Genre.findOne({ name: name }).exec(function (err, found_genre) {
         if (err) {
           return next(err);
         }
         if (found_genre) {
           res.redirect(found_genre.url);
         } else {
-          Genre.findByIdAndUpdate(req.params.id, genre, {}, function (
-            err,
-            thegenre
-          ) {
+          Genre.findByIdAndUpdate(id, genre, {}, function (err, thegenre) {
             if (err) return next(err);
             res.redirect(thegenre.url);
           });

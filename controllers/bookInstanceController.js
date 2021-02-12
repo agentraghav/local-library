@@ -24,7 +24,8 @@ exports.bookinstance_list = function (req, res, next) {
 // Display bookinstance detail
 
 exports.bookinstance_detail = function (req, res, next) {
-  BookInstance.findById(req.params.id)
+  const { id } = req.params;
+  BookInstance.findById(id)
     .populate('book')
     .exec(function (err, bookInstance) {
       if (err) {
@@ -74,11 +75,13 @@ exports.bookinstance_create_post = [
   (req, res, next) => {
     const errors = validationResult(req);
 
+    const { book, imprint, status, due_back } = req.body;
+
     var bookinstance = new BookInstance({
-      book: req.body.book,
-      imprint: req.body.imprint,
-      status: req.body.status,
-      due_back: req.body.due_back,
+      book: book,
+      imprint: imprint,
+      status: status,
+      due_back: due_back,
     });
 
     if (!errors.isEmpty()) {
@@ -110,10 +113,12 @@ exports.bookinstance_create_post = [
 // bookInstance delete on get
 
 exports.bookinstance_delete_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       bookInstance: function (callback) {
-        BookInstance.findById(req.params.id).exec(callback);
+        BookInstance.findById(id).exec(callback);
       },
     },
     function (err, results) {
@@ -129,16 +134,18 @@ exports.bookinstance_delete_get = function (req, res, next) {
 // bookinstance delete on post
 
 exports.bookinstance_delete_post = function (req, res, next) {
+  const { bookinstanceid } = req.body;
+
   async.parallel(
     {
       bookInstance: function (callback) {
-        BookInstance.findById(req.body.bookinstanceid).exec(callback);
+        BookInstance.findById(bookinstanceid).exec(callback);
       },
     },
     function (err, results) {
       if (err) return next(err);
       BookInstance.findByIdAndRemove(
-        req.body.bookinstanceid,
+        bookinstanceid,
         function deleteBookInstance(err) {
           if (err) return next(err);
           res.redirect('/catalog/bookinstances');
@@ -151,10 +158,12 @@ exports.bookinstance_delete_post = function (req, res, next) {
 // bookinstance update on get
 
 exports.bookinstance_update_get = function (req, res, next) {
+  const { id } = req.params;
+
   async.parallel(
     {
       bookInstance: function (callback) {
-        BookInstance.findById(req.params.id).populate('book').exec(callback);
+        BookInstance.findById(id).populate('book').exec(callback);
       },
       books: function (callback) {
         Book.find(callback);
@@ -198,13 +207,14 @@ exports.bookinstance_update_post = [
 
   (req, res, next) => {
     const errors = validationResult(req);
-
+    const { book, imprint, status, due_back } = req.body;
+    const { id } = req.params;
     var bookInstance = new BookInstance({
-      book: req.body.book,
-      imprint: req.book.imprint,
-      due_back: req.book.due_back,
-      status: req.body.status,
-      _id: req.params.id,
+      book: book,
+      imprint: imprint,
+      due_back: due_back,
+      status: status,
+      _id: id,
     });
 
     if (!errors.isEmpty()) {
