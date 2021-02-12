@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const { DateTime } = require('luxon');
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 var AuthorSchema = new Schema({
   first_name: { type: String, required: true, maxlength: 200 },

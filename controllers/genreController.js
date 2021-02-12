@@ -1,12 +1,12 @@
-var Genre = require('../models/genre');
+const Genre = require('../models/genre');
 
-var Book = require('../models/book');
+const Book = require('../models/book');
 
-var async = require('async');
+const async = require('async');
 
-var { body, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
-var Author = require('../models/author');
+const Author = require('../models/author');
 
 // Display list of genres
 

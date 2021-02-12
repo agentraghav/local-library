@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const { model } = require('./author');
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 var GenreSchema = new Schema({
   name: { type: String, minlength: 3, maxlength: 100, required: true },

@@ -1,6 +1,6 @@
-var Author = require('../models/author');
+const Author = require('../models/author');
 
-var async = require('async');
+const async = require('async');
 
 const Book = require('../models/book');
 
