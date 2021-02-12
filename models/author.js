@@ -4,7 +4,7 @@ const { DateTime } = require('luxon');
 
 const Schema = mongoose.Schema;
 
-var AuthorSchema = new Schema({
+const AuthorSchema = new Schema({
   first_name: { type: String, required: true, maxlength: 200 },
   family_name: { type: String, required: true, maxlength: 200 },
   date_of_birth: { type: Date },
